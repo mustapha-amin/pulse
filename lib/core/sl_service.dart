@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pulse/api/endpoints.dart';
+import 'package:pulse/api/logging_interceptor.dart';
 
 void setupServices() {
   GetIt getIt = GetIt.instance;
@@ -17,7 +18,7 @@ void setupServices() {
       ),
     );
 
-    dio.interceptors.add(LogInterceptor());
+    dio.interceptors.add(LoggingInterceptor());
     return dio;
   });
 }
