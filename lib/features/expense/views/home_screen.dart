@@ -1,17 +1,139 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:pulse/core/app_colors.dart';
+import 'package:pulse/core/extensions.dart';
+import 'package:pulse/features/expense/models/expense.dart';
+import 'package:pulse/features/expense/notifers/expense_notifier.dart';
+import 'package:pulse/features/expense/widgets/expense_empty_state.dart';
+import 'package:pulse/features/expense/widgets/expense_load_error.dart';
+import 'package:pulse/features/expense/widgets/expense_list_tile.dart';
+import 'package:pulse/features/expense/widgets/expense_loading_skeleton.dart';
+import 'package:pulse/features/expense/widgets/monthly_summary_card.dart';
+import 'package:pulse/features/expense/widgets/recent_expenses_header.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final expensesState = ref.watch(expenseNotifierProvider);
+    final expenses = expensesState.value;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFC),
+      appBar: AppBar(
+        title: Text('Pulse', style: context.textTheme.titleLarge,),
+        backgroundColor: const Color(0xFFF9FAFC),
+        surfaceTintColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.account_balance_wallet_outlined,
+              color: Colors.white,
+              size: 25,
+            ),
+          ),
+        ),
+        actions: const [
+          Icon(Icons.notifications_none_outlined),
+          SizedBox(width: 14),
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: AppColors.primaryColor,
+            child: Icon(Icons.person, color: Colors.white, size: 18),
+          ),
+          SizedBox(width: 16),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: Colors.white,
+        tooltip: 'Add expense',
+        child: const Icon(Icons.add),
+      ),
+      body: SafeArea(
+        child: switch (expensesState) {
+          AsyncError(:final error) when expenses == null => ExpenseLoadError(
+            error: error,
+            onRetry: () => ref.read(expenseNotifierProvider.notifier).refresh(),
+          ),
+          _ => _ExpenseDashboard(
+            expenses: expenses ?? expenseLoadingPlaceholders,
+            isLoading: expensesState.isLoading,
+            onRefresh: () =>
+                ref.read(expenseNotifierProvider.notifier).refresh(),
+          ),
+        },
+      ),
+    );
+  }
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _ExpenseDashboard extends StatelessWidget {
+  const _ExpenseDashboard({
+    required this.expenses,
+    required this.isLoading,
+    required this.onRefresh,
+  });
+
+  final List<Expense> expenses;
+  final bool isLoading;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final recentExpenses = [...expenses]
+      ..sort((first, second) => second.createdAt.compareTo(first.createdAt));
+    final now = DateTime.now();
+    final monthExpenses = recentExpenses.where(
+      (expense) =>
+          expense.createdAt.year == now.year &&
+          expense.createdAt.month == now.month,
+    );
+    final totalKobo = monthExpenses.fold<int>(
+      0,
+      (total, expense) => total + expense.amountKobo,
+    );
+
+    return Skeletonizer(
+      enabled: isLoading,
+      child: RefreshIndicator(
+        color: AppColors.primaryColor,
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 104),
+          children: [
+            Text(
+              DateFormat('MMMM y').format(now),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            MonthlySummaryCard(totalKobo: totalKobo),
+            const SizedBox(height: 20),
+            const RecentExpensesHeader(),
+            const SizedBox(height: 10),
+            if (!isLoading && recentExpenses.isEmpty)
+              const ExpenseEmptyState()
+            else
+              ...recentExpenses.map(
+                (expense) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ExpenseListTile(expense: expense),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
