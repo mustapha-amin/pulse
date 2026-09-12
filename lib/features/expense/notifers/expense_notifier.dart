@@ -24,35 +24,44 @@ class ExpenseNotifier extends AsyncNotifier<List<Expense>> {
   Future<void> createExpense(Expense expense) async {
     final currentExpenses = state.value ?? [];
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final createdExpense = await _expenseService.createExpense(expense);
-      return [...currentExpenses, createdExpense];
-    });
+      state = AsyncData([...currentExpenses, createdExpense]);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+    }
   }
 
   Future<void> updateExpense(Expense expense) async {
     final currentExpenses = state.value ?? [];
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final updatedExpense = await _expenseService.updateExpense(expense);
-      return [
+      state = AsyncData([
         for (final currentExpense in currentExpenses)
           if (currentExpense.id == updatedExpense.id)
             updatedExpense
           else
             currentExpense,
-      ];
-    });
+      ]);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+    }
   }
 
   Future<void> deleteExpense(String id) async {
     final currentExpenses = state.value ?? [];
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       await _expenseService.deleteExpense(id);
-      return currentExpenses
-          .where((expense) => expense.id != id)
-          .toList(growable: false);
-    });
+      state = AsyncData(
+        currentExpenses
+            .where((expense) => expense.id != id)
+            .toList(growable: false),
+      );
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 }

@@ -1,10 +1,18 @@
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
-enum ExpenseCategory { 
-  food, 
-  transport, 
-  bills, 
-  other;
+enum ExpenseCategory {
+  food('Food', Icons.restaurant),
+  transport('Transport', Icons.directions_car),
+  bills('Bills', Icons.bolt),
+  shopping('Shopping', Icons.shopping_bag_outlined),
+  entertainment('Entertainment', Icons.sports_esports_outlined),
+  healthcare('Healthcare', Icons.favorite_outline),
+  other('Other', Icons.more_horiz);
+
+  const ExpenseCategory(this.label, this.icon);
+
+  final String label;
+  final IconData icon;
 }
 
 class Expense {
@@ -28,7 +36,7 @@ class Expense {
       id: json['id'] as String? ?? json['_id'] as String?,
       title: json['title'] as String,
       amountKobo: json['amountKobo'] as int,
-      category: ExpenseCategory.values.firstWhere((e) => e == json['category']),
+      category: ExpenseCategory.values.byName(json['category'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
