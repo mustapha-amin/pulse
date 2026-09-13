@@ -54,3 +54,7 @@ Here are the key trade-offs in the current implementation and what would be tack
 ### 3. Asynchronous Mutations vs. Optimistic UI Updates
 - **Current Trade-off**: Adding, updating, or deleting an expense waits for the network response before updating the UI state.
 - **With More Time**: Implement optimistic UI updates with automatic rollback on network failure to deliver instant, zero-latency interactions.
+
+## Screenshots
+
+<img width="1600" height="900" alt="Pulse" src="https://github.com/user-attachments/assets/d0358633-34c0-4618-99db-c9f18996b2bd" />
