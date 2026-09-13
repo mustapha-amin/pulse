@@ -70,7 +70,11 @@ class HomeScreen extends ConsumerWidget {
             onRetry: () => ref.read(expenseNotifierProvider.notifier).refresh(),
           ),
           _ => _ExpenseDashboard(
-            expenses: expenses ?? expenseLoadingPlaceholders,
+            expenses:
+                (expensesState.isLoading &&
+                    (expenses == null || expenses.isEmpty))
+                ? expenseLoadingPlaceholders
+                : (expenses ?? expenseLoadingPlaceholders),
             isLoading: expensesState.isLoading,
             onRefresh: () =>
                 ref.read(expenseNotifierProvider.notifier).refresh(),
@@ -94,7 +98,10 @@ class _ExpenseDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recentExpenses = [...expenses]
+    final effectiveExpenses = (isLoading && expenses.isEmpty)
+        ? expenseLoadingPlaceholders
+        : expenses;
+    final recentExpenses = [...effectiveExpenses]
       ..sort((first, second) => second.createdAt.compareTo(first.createdAt));
     final now = DateTime.now();
     final monthExpenses = recentExpenses.where(

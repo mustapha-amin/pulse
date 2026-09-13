@@ -27,7 +27,7 @@ extension WidgetExtensions on Widget {
 
   Widget centralize() => Center(child: this);
 
-  Widget expanded([int flex = 1]) => Expanded(child: this, flex: flex);
+  Widget expanded([int flex = 1]) => Expanded(flex: flex, child: this);
 }
 
 extension NairaFormatter on num {
