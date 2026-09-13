@@ -12,7 +12,6 @@ import 'package:pulse/features/expense/widgets/expense_load_error.dart';
 import 'package:pulse/features/expense/widgets/expense_list_tile.dart';
 import 'package:pulse/features/expense/widgets/expense_loading_skeleton.dart';
 import 'package:pulse/features/expense/widgets/monthly_summary_card.dart';
-import 'package:pulse/features/expense/widgets/recent_expenses_header.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -27,19 +26,10 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: const Color(0xFFF9FAFC),
       appBar: AppBar(
         title: Row(
+          spacing: 4,
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.account_balance_wallet_outlined,
-                color: Colors.white,
-                size: 25,
-              ),
-            ),
-            Text('Pulse', style: context.textTheme.titleLarge),
+            Image.asset('assets/app_icon.png', width: 40, height: 40, fit: BoxFit.contain),
+            Text('Pulse', style: context.textTheme.titleLarge!.copyWith(fontWeight: .w500)),
           ],
         ),
         backgroundColor: const Color(0xFFF9FAFC),
@@ -133,7 +123,28 @@ class _ExpenseDashboard extends StatelessWidget {
               const SizedBox(height: 12),
               MonthlySummaryCard(totalKobo: totalKobo),
               const SizedBox(height: 20),
-              const RecentExpensesHeader(),
+              Row(
+      children: [
+        Text(
+          'Recent Expenses',
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const Spacer(),
+        Text(
+          'View All',
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppColors.primaryColor,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const Icon(
+          Icons.chevron_right,
+          color: AppColors.primaryColor,
+          size: 16,
+        ),
+      ],
+    ),
               const SizedBox(height: 10),
               if (!isLoading && recentExpenses.isEmpty)
                 const ExpenseEmptyState()
