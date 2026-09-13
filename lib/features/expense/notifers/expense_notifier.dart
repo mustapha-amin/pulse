@@ -33,7 +33,11 @@ class ExpenseNotifier extends AsyncNotifier<ExpenseState> {
     state = const AsyncLoading();
     try {
       final createdExpense = await _expenseService.createExpense(expense);
-      state = AsyncData(currentExpenses!.copyWith(expenses: [...currentExpenses.expenses, createdExpense]));
+      state = AsyncData(
+        currentExpenses!.copyWith(
+          expenses: [...currentExpenses.expenses, createdExpense],
+        ),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
     }
@@ -44,7 +48,13 @@ class ExpenseNotifier extends AsyncNotifier<ExpenseState> {
     state = const AsyncLoading();
     try {
       final updatedExpense = await _expenseService.updateExpense(expense);
-      state = AsyncData(currentExpenses!.copyWith(expenses: [...currentExpenses.expenses, updatedExpense]));
+      state = AsyncData(
+        currentExpenses!.copyWith(
+          expenses: currentExpenses.expenses
+              .map((e) => e.id == updatedExpense.id ? updatedExpense : e)
+              .toList(),
+        ),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
     }
@@ -55,7 +65,11 @@ class ExpenseNotifier extends AsyncNotifier<ExpenseState> {
     state = const AsyncLoading();
     try {
       await _expenseService.deleteExpense(id);
-      state = AsyncData(currentExpenses!.copyWith(expenses: currentExpenses.expenses.where((e) => e.id != id).toList()));
+      state = AsyncData(
+        currentExpenses!.copyWith(
+          expenses: currentExpenses.expenses.where((e) => e.id != id).toList(),
+        ),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       Error.throwWithStackTrace(error, stackTrace);
