@@ -22,13 +22,11 @@ class ExpenseDetailRow extends StatelessWidget {
           const SizedBox(width: 12),
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
           const Spacer(),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
-            ),
+          Text(
+            value,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
           ),
         ],
       ),

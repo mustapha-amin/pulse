@@ -119,17 +119,5 @@ const _categoryStyles = <ExpenseCategory, _CategoryStyle>{
     Color(0xFF3B5CC4),
   ),
   ExpenseCategory.bills: _CategoryStyle(Color(0xFFE8E9FF), Color(0xFF4A59C8)),
-  ExpenseCategory.shopping: _CategoryStyle(
-    Color(0xFFC9F8DB),
-    Color(0xFF178A55),
-  ),
-  ExpenseCategory.entertainment: _CategoryStyle(
-    Color(0xFFD9F0FF),
-    Color(0xFF287DA7),
-  ),
-  ExpenseCategory.healthcare: _CategoryStyle(
-    Color(0xFFFFDCE6),
-    Color(0xFFC73E65),
-  ),
   ExpenseCategory.other: _CategoryStyle(Color(0xFFE8EBF0), Color(0xFF657080)),
 };

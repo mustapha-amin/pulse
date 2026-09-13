@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pulse/core/app_colors.dart';
 import 'package:pulse/core/extensions.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MonthlySummaryCard extends StatelessWidget {
   const MonthlySummaryCard({required this.totalKobo, super.key});
@@ -18,7 +19,9 @@ class MonthlySummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('TOTAL SPENT', style: TextStyle(color: Colors.white70)),
+          const Skeleton.keep(
+            child: Text('TOTAL SPENT', style: TextStyle(color: Colors.white70)),
+          ),
           const SizedBox(height: 8),
           Text(
             (totalKobo / 100).toNaira(),
@@ -26,10 +29,12 @@ class MonthlySummaryCard extends StatelessWidget {
                 ?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
-          Text(
-            'Disbursed across this month’s expenses',
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: Colors.white70),
+          Skeleton.keep(
+            child: Text(
+              'Disbursed across this month’s expenses',
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: Colors.white70),
+            ),
           ),
         ],
       ),

@@ -4,9 +4,6 @@ enum ExpenseCategory {
   food('Food', Icons.restaurant),
   transport('Transport', Icons.directions_car),
   bills('Bills', Icons.bolt),
-  shopping('Shopping', Icons.shopping_bag_outlined),
-  entertainment('Entertainment', Icons.sports_esports_outlined),
-  healthcare('Healthcare', Icons.favorite_outline),
   other('Other', Icons.more_horiz);
 
   const ExpenseCategory(this.label, this.icon);

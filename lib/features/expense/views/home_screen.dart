@@ -3,18 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pulse/core/app_colors.dart';
 import 'package:pulse/core/extensions.dart';
-import 'package:pulse/features/expense/models/expense.dart';
+import 'package:pulse/core/theme_notifier.dart';
 import 'package:pulse/features/expense/notifers/expense_notifier.dart';
 import 'package:pulse/features/expense/views/expense_details_screen.dart';
 import 'package:pulse/features/expense/views/expense_form_screen.dart';
 import 'package:pulse/features/expense/widgets/expense_empty_state.dart';
-import 'package:pulse/features/expense/widgets/expense_load_error.dart';
 import 'package:pulse/features/expense/widgets/expense_list_tile.dart';
+import 'package:pulse/features/expense/widgets/expense_load_error.dart';
 import 'package:pulse/features/expense/widgets/expense_loading_skeleton.dart';
 import 'package:pulse/features/expense/widgets/monthly_summary_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
-import 'package:pulse/core/theme_notifier.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,8 +20,13 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expensesState = ref.watch(expenseNotifierProvider);
-    final expenses = expensesState.value;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isLoading = expensesState.isLoading;
+
+    final totalKobo = expensesState.maybeWhen(
+      data: (data) => data.total,
+      orElse: () => 0,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -74,115 +77,87 @@ class HomeScreen extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
-        child: switch (expensesState) {
-          AsyncError(:final error) when expenses == null => ExpenseLoadError(
-            error: error,
-            onRetry: () => ref.read(expenseNotifierProvider.notifier).refresh(),
-          ),
-          _ => _ExpenseDashboard(
-            expenses:
-                (expensesState.isLoading &&
-                    (expenses == null || expenses.isEmpty))
-                ? expenseLoadingPlaceholders
-                : (expenses ?? expenseLoadingPlaceholders),
-            isLoading: expensesState.isLoading,
-            onRefresh: () =>
-                ref.read(expenseNotifierProvider.notifier).refresh(),
-          ),
-        },
-      ),
-    );
-  }
-}
-
-class _ExpenseDashboard extends StatelessWidget {
-  const _ExpenseDashboard({
-    required this.expenses,
-    required this.isLoading,
-    required this.onRefresh,
-  });
-
-  final List<Expense> expenses;
-  final bool isLoading;
-  final Future<void> Function() onRefresh;
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveExpenses = (isLoading && expenses.isEmpty)
-        ? expenseLoadingPlaceholders
-        : expenses;
-    final recentExpenses = [...effectiveExpenses]
-      ..sort((first, second) => second.createdAt.compareTo(first.createdAt));
-    final now = DateTime.now();
-    final monthExpenses = recentExpenses.where(
-      (expense) =>
-          expense.createdAt.year == now.year &&
-          expense.createdAt.month == now.month,
-    );
-    final totalKobo = monthExpenses.fold<int>(
-      0,
-      (total, expense) => total + expense.amountKobo,
-    );
-
-    return Skeletonizer(
-      enabled: isLoading,
-      child: IgnorePointer(
-        ignoring: isLoading,
         child: RefreshIndicator(
           color: AppColors.primaryColor,
-          onRefresh: onRefresh,
+          onRefresh: () => ref.read(expenseNotifierProvider.notifier).refresh(),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 104),
             children: [
-              Text(
-                DateFormat('MMMM y').format(now),
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+              Skeleton.keep(
+                child: Text(
+                  DateFormat('MMMM y').format(DateTime.now()),
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
               ),
               const SizedBox(height: 12),
-              MonthlySummaryCard(totalKobo: totalKobo),
+              Skeletonizer(
+                enabled: isLoading,
+                child: MonthlySummaryCard(totalKobo: totalKobo),
+              ),
               const SizedBox(height: 20),
-              Row(
-      children: [
-        Text(
-          'Recent Expenses',
-          style: Theme.of(context).textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const Spacer(),
-        Text(
-          'View All',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.primaryColor,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const Icon(
-          Icons.chevron_right,
-          color: AppColors.primaryColor,
-          size: 16,
-        ),
-      ],
-    ),
+              Skeleton.keep(
+                child: Row(
+                  children: [
+                    Text(
+                      'All Expenses',
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 10),
-              if (!isLoading && recentExpenses.isEmpty)
-                const ExpenseEmptyState()
-              else
-                ...recentExpenses.map(
-                  (expense) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ExpenseListTile(
-                      expense: expense,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ExpenseDetailsScreen(expense: expense),
+              ...expensesState.when(
+                data: (data) {
+                  if (data.expenses.isEmpty) {
+                    return const [ExpenseEmptyState()];
+                  }
+                  return data.expenses.map(
+                    (expense) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ExpenseListTile(
+                        expense: expense,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ExpenseDetailsScreen(expense: expense),
+                          ),
                         ),
                       ),
                     ),
+                  );
+                },
+                error: (error, _) => [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: ExpenseLoadError(
+                      error: error,
+                      onRetry: () =>
+                          ref.read(expenseNotifierProvider.notifier).refresh(),
+                    ),
                   ),
-                ),
+                ],
+                loading: () => [
+                  Skeletonizer(
+                    enabled: true,
+                    child: Column(
+                      children: expenseLoadingPlaceholders
+                          .map(
+                            (expense) => Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: ExpenseListTile(
+                                expense: expense,
+                                onTap: null,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

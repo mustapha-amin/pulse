@@ -18,7 +18,7 @@ class ExpenseLoadError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.receipt_long_outlined, size: 48),
+            const Icon(Icons.error_outline, size: 80,),
             const SizedBox(height: 12),
             Text(
               'Could not load expenses',

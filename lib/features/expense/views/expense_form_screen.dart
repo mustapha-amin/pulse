@@ -60,7 +60,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
     final expenseState = ref.watch(expenseNotifierProvider);
     final isSaving = _hasSubmitted && expenseState.isLoading;
 
-    ref.listen<AsyncValue<List<Expense>>>(expenseNotifierProvider, (
+    ref.listen(expenseNotifierProvider, (
       previous,
       next,
     ) {

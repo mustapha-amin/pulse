@@ -15,15 +15,13 @@ class CustomDioException implements Exception {
           DioExceptionType.sendTimeout ||
           DioExceptionType.receiveTimeout ||
           DioExceptionType.connectionTimeout:
-        errorMessage =
-            "A connection error occured. Please check your internet and try again";
+        errorMessage = "A connection error occured. Please check your internet and try again";
+        break;
       case DioExceptionType.unknown:
         errorMessage = 'Unexpected error occurred.';
         break;
       default:
-       
-        errorMessage =
-            "Oops. Something went wrong. It's not your fault";
+        errorMessage = "Oops. Something went wrong. It's not your fault";
         break;
     }
     log("Error message ===> $errorMessage");
