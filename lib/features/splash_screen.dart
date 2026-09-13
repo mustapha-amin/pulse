@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    _navigationTimer = Timer(const Duration(milliseconds: 3000), () {
+    _navigationTimer = Timer(const Duration(milliseconds: 4000), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
