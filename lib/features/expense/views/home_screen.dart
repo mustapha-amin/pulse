@@ -14,6 +14,8 @@ import 'package:pulse/features/expense/widgets/expense_loading_skeleton.dart';
 import 'package:pulse/features/expense/widgets/monthly_summary_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:pulse/core/theme_notifier.dart';
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -21,28 +23,46 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expensesState = ref.watch(expenseNotifierProvider);
     final expenses = expensesState.value;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFC),
       appBar: AppBar(
         title: Row(
           spacing: 4,
           children: [
-            Image.asset('assets/app_icon.png', width: 40, height: 40, fit: BoxFit.contain),
-            Text('Pulse', style: context.textTheme.titleLarge!.copyWith(fontWeight: .w500)),
+            Image.asset(
+              'assets/app_icon.png',
+              width: 40,
+              height: 40,
+              fit: BoxFit.contain,
+            ),
+            Text(
+              'Pulse',
+              style: context.textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
-        backgroundColor: const Color(0xFFF9FAFC),
         surfaceTintColor: Colors.transparent,
-        actions: const [
-          Icon(Icons.notifications_none_outlined),
-          SizedBox(width: 14),
-          CircleAvatar(
+        actions: [
+          IconButton(
+            tooltip: isDark ? 'Switch to Light mode' : 'Switch to Dark mode',
+            icon: Icon(
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            ),
+            onPressed: () =>
+                ref.read(themeNotifierProvider.notifier).toggleTheme(),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.notifications_none_outlined),
+          const SizedBox(width: 14),
+          const CircleAvatar(
             radius: 16,
             backgroundColor: AppColors.primaryColor,
             child: Icon(Icons.person, color: Colors.white, size: 18),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
         ],
       ),
       floatingActionButton: FloatingActionButton(

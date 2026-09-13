@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pulse/core/app_colors.dart';
+import 'package:pulse/core/extensions.dart';
 import 'package:pulse/features/expense/models/expense.dart';
 import 'package:pulse/features/expense/notifers/expense_notifier.dart';
 import 'package:pulse/features/expense/widgets/expense_category_selector.dart';
@@ -121,22 +122,12 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                   backgroundColor: AppColors.primaryColor,
                   minimumSize: const Size.fromHeight(52),
                 ),
-                icon: isSaving
-                    ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.check_circle_outline),
                 label: Text(
                   isSaving
                       ? 'Saving...'
                       : _isEditing
                       ? 'Update Expense'
-                      : 'Save Expense',
+                      : 'Save Expense', style: context.textTheme.bodyLarge!.copyWith(color: Colors.white),
                 ),
               ),
             ],

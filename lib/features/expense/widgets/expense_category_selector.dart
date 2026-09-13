@@ -22,7 +22,14 @@ class ExpenseCategorySelector extends StatelessWidget {
         return ChoiceChip(
           selected: isSelected,
           onSelected: (_) => onChanged(category),
-          avatar: Icon(category.icon, size: 18, color: isSelected ? Colors.white : Colors.grey[800],),
+          showCheckmark: false,
+          avatar: Icon(
+            category.icon,
+            size: 18,
+            color: isSelected
+                ? AppColors.primaryColor
+                : Theme.of(context).iconTheme.color ?? Colors.grey[800],
+          ),
           label: Text(category.label),
           selectedColor: AppColors.primaryColor.withValues(alpha: 0.16),
           labelStyle: TextStyle(
@@ -30,7 +37,7 @@ class ExpenseCategorySelector extends StatelessWidget {
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
           side: BorderSide(
-            color: isSelected ? AppColors.primaryColor : Colors.transparent,
+            color: isSelected ? AppColors.primaryColor : Colors.blueGrey,
           ),
         );
       }).toList(),

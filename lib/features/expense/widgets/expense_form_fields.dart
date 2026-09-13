@@ -47,13 +47,22 @@ class _ExpenseAmountFieldState extends State<ExpenseAmountField> {
         const SizedBox(height: 10),
         Wrap(
           spacing: 8,
-          children: [500, 1000, 5000]
+          children: [500, 1000, 5000, 10000, 50000, 100000]
               .map(
                 (amount) => ActionChip(
-                  color: WidgetStatePropertyAll(selectedAmount == amount ? AppColors.primaryColor : Colors.white),
-                  label: Text(amount.toNaira(), style: context.textTheme.bodyMedium!.copyWith(
-                    color: selectedAmount == amount ? Colors.white :Colors.black
-                  ),),
+                  color: WidgetStatePropertyAll(
+                    selectedAmount == amount
+                        ? AppColors.primaryColor
+                        : Theme.of(context).cardColor,
+                  ),
+                  label: Text(
+                    amount.toNaira(),
+                    style: context.textTheme.bodyMedium!.copyWith(
+                      color: selectedAmount == amount
+                          ? Colors.white
+                          : Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
+                  ),
                   onPressed: () {
                     widget.onQuickAdd(amount);
                     setState(() {

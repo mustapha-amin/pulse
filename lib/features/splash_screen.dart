@@ -66,7 +66,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFC),
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -89,7 +88,6 @@ class _SplashScreenState extends State<SplashScreen>
                   'Pulse',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF101828),
                     letterSpacing: -0.5,
                   ),
                 ),

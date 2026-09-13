@@ -14,7 +14,7 @@ class ExpenseListTile extends StatelessWidget {
     final categoryStyle = _categoryStyles[expense.category]!;
 
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
