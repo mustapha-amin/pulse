@@ -21,6 +21,10 @@ class AppTheme {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark, // Android: dark icons
           statusBarBrightness: Brightness.light, // iOS: dark icons
+          systemNavigationBarColor: Color(0xFFF9FAFC),
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
+          systemNavigationBarContrastEnforced: false,
         ),
       ),
       buttonTheme: ButtonThemeData(
@@ -50,6 +54,10 @@ class AppTheme {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light, // Android: light icons
           statusBarBrightness: Brightness.dark, // iOS: light icons
+          systemNavigationBarColor: Color(0xFF17182C),
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarContrastEnforced: false,
         ),
       ),
       buttonTheme: ButtonThemeData(

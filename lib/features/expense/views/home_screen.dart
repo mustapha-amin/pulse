@@ -94,6 +94,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               Skeletonizer(
                 enabled: isLoading,
+                effect: AppColors.skeletonEffect(isDark: isDark),
                 child: MonthlySummaryCard(totalKobo: totalKobo),
               ),
               const SizedBox(height: 20),
@@ -142,6 +143,7 @@ class HomeScreen extends ConsumerWidget {
                 loading: () => [
                   Skeletonizer(
                     enabled: true,
+                    effect: AppColors.skeletonEffect(isDark: isDark),
                     child: Column(
                       children: expenseLoadingPlaceholders
                           .map(
@@ -149,7 +151,7 @@ class HomeScreen extends ConsumerWidget {
                               padding: const EdgeInsets.only(bottom: 10),
                               child: ExpenseListTile(
                                 expense: expense,
-                                onTap: null,
+                                onTap: () {},
                               ),
                             ),
                           )
