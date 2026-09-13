@@ -20,12 +20,7 @@ class ExpenseLoadError extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 80,),
             const SizedBox(height: 12),
-            Text(
-              'Could not load expenses',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 6),
-            Text('$error', textAlign: TextAlign.center),
+            Text('$error', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium,),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onRetry,
