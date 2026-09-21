@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pulse/features/expense/models/expense.dart';
 import 'package:pulse/features/expense/models/expense_state.dart';
@@ -9,13 +12,22 @@ final expenseServiceProvider = Provider<ExpenseService>((ref) {
 });
 
 final expenseNotifierProvider =
-    AsyncNotifierProvider<ExpenseNotifier, ExpenseState>(ExpenseNotifier.new);
+    AsyncNotifierProvider<ExpenseNotifier, ExpenseState>(
+      ExpenseNotifier.new,
+      retry: (int retryCount, Object error) {
+        if (retryCount >= 3) return null;
+        if (error is ProviderException) return null;
+        return Duration(
+          milliseconds: 200 * (1 << retryCount),
+        );
+      },
+    );
 
 class ExpenseNotifier extends AsyncNotifier<ExpenseState> {
   ExpenseService get _expenseService => ref.read(expenseServiceProvider);
 
   @override
-  Future<ExpenseState> build() async {
+  FutureOr<ExpenseState> build() async {
     final expenses = await _expenseService.fetchAll();
     return ExpenseState(expenses);
   }
